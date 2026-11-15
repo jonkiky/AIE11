@@ -29,7 +29,7 @@ The skeleton is provided (package, CLI, arguments, `.env` loading, the `Hit` wit
   </tr>
   <tr>
     <td><strong>Tools</strong></td>
-    <td>Python, NumPy, the OpenAI Python SDK, <code>uv</code>. Session 2's <code>aimakerspace/</code> is a reference to read, not a dependency.</td>
+    <td>Python, NumPy, LiteLLM, Ollama, <code>uv</code>. Session 2's <code>aimakerspace/</code> is a reference to read, not a dependency.</td>
   </tr>
   <tr>
     <td><strong>Due</strong></td>
@@ -37,7 +37,7 @@ The skeleton is provided (package, CLI, arguments, `.env` loading, the `Hit` wit
   </tr>
   <tr>
     <td><strong>Before you start</strong></td>
-    <td>Your AIE11 repo synced, <code>uv</code> installed, and an OpenAI key with a little credit on it.</td>
+    <td>Your AIE11 repo synced, <code>uv</code> and Ollama installed, and an OpenAI key with a little credit for the Session 2 notebook.</td>
   </tr>
 </table>
 
@@ -86,6 +86,7 @@ Prefer these to blog posts and your agent's memory of them.
 | --- | --- | --- |
 | OpenAI Embeddings | chunks into vectors; the `dimensions` parameter | [platform.openai.com — Embeddings](https://platform.openai.com/docs/api-reference/embeddings/create) |
 | OpenAI Chat Completions | the answer call, and the `seed` / `temperature` knobs | [platform.openai.com — Chat](https://platform.openai.com/docs/api-reference/chat/create) |
+| LiteLLM and Ollama | local model calls for this app | [LiteLLM — Ollama](https://docs.litellm.ai/docs/providers/ollama), [Ollama](https://docs.ollama.com/) |
 | uv | `uv sync`, `uv add`, `uv run` | [docs.astral.sh/uv](https://docs.astral.sh/uv/) |
 
 ---
@@ -113,8 +114,8 @@ Everything's in this folder. **✏️ is yours to write; ✅ is already done.**
 
 ```
 00_Technical_Challenges/Week 1/
-├── pyproject.toml          ✅ deps: numpy, openai, python-dotenv
-├── .env.example            ✅ cp to .env, add your key
+├── pyproject.toml          ✅ deps: numpy, litellm, python-dotenv
+├── .env.example            ✅ optional local Ollama endpoint
 ├── data/
 │   └── HealthWellnessGuide.txt   ✅ the corpus that ships. 16,206 characters.
 ├── retrieval_app/
@@ -179,9 +180,15 @@ Open `Pythonic_RAG.ipynb`, **select `.venv` as your kernel**, run it top to bott
 ```bash
 cd "00_Technical_Challenges/Week 1"
 uv sync
-cp .env.example .env     # then set OPENAI_API_KEY=sk-...
+cp .env.example .env     # optionally adjust LLM_API_BASE
+ollama pull qwen3-embedding:0.6b
+ollama pull qwen3:4b-instruct
 uv run python -m retrieval_app "What exercises help with lower back pain?"
 ```
+
+With Ollama running, the app uses `qwen3-embedding:0.6b` for 1024-dimensional
+embeddings and `qwen3:4b-instruct` for answers. Its default endpoint is
+`http://localhost:11434`; it does not need an OpenAI key.
 
 That command already works and tells you the first thing you haven't written. Work in order — each file depends on the one before it, and finishing one moves the error along:
 
@@ -267,7 +274,7 @@ Pick **one** — and pick the one that **fixes a failure from Step 3.** It's not
 
 ## Step 5: Diagram, decision
 
-**Diagram** — paper, drawing app, or a Mermaid block, not a box labeled "RAG". Draw the 5 stages and what flows on each arrow (string, list of strings, `(n_chunks, 1536)` matrix, list of `Hit`s, messages, string). Mark the 2 arrows that call OpenAI, and where your Step 4 change sits. If you can't draw it without opening your code, you just found the part you don't understand yet.
+**Diagram** — paper, drawing app, or a Mermaid block, not a box labeled "RAG". Draw the 5 stages and what flows on each arrow (string, list of strings, `(n_chunks, 1024)` matrix, list of `Hit`s, messages, string). Mark the 2 arrows that call the models through LiteLLM and Ollama, and where your Step 4 change sits. If you can't draw it without opening your code, you just found the part you don't understand yet.
 
 **Decision** in `DECISIONS.md` — 3 short answers, not an essay:
 
@@ -279,14 +286,14 @@ Pick **one** — and pick the one that **fixes a failure from Step 3.** It's not
 
 That third one is what everybody skips and gets asked about. *"I added a 0.25 score floor so search can return nothing. Fixed my decline question. Cost me 1 true answer at 0.23. I'd raise the floor if users saw confident answers from bad chunks; drop it if the corpus grew enough that everything scored lower"* is an engineering position. *"Threshold is better"* is a preference.
 
-**✅ Deliverables:** the diagram (data types on arrows, paid calls marked); `DECISIONS.md` with all 3 fields.
+**✅ Deliverables:** the diagram (data types and model calls marked); `DECISIONS.md` with all 3 fields.
 
 ---
 
 ## If it's blocked
 
-- **`No OPENAI_API_KEY found`** — Did you `cp .env.example .env` **in this folder** and add your key (no quotes, no spaces around `=`)? And does the key have credit? Zero balance fails at *request*, not auth.
-- **`No module named retrieval_app` / `openai`** — `python -m` searches your current directory, so run from `00_Technical_Challenges/Week 1/` with `uv run python -m ...`. Plain `python` lacks the deps; run `uv sync` if you haven't.
+- **Ollama connection or model error** — Check that Ollama is running, `LLM_API_BASE` points to it, and both models have been pulled.
+- **`No module named retrieval_app` / `litellm`** — `python -m` searches your current directory, so run from `00_Technical_Challenges/Week 1/` with `uv run python -m ...`. Plain `python` lacks the deps; run `uv sync` if you haven't.
 - **Chunk count is wrong** — `split_corpus` should step by `chunk_size - chunk_overlap`; stepping by `chunk_size` gives too few, by `chunk_overlap` far too many. Check against `ceil(characters / (chunk_size - chunk_overlap))`.
 - **Retrieval returns nothing useful / scores 0.3–0.5** — Run `--show-chunks` and read what came back. Those absolute scores are normal for cosine over prose; the **gap** between top hit and 4th hit is what matters, and what you choose a threshold against.
 - **Every score is 1.000** — You're comparing a vector to itself, or `build_index` and `search` use different embedding models. A query embedded with a different model than the index **fails silently** — the most common silent bug here.

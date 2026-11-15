@@ -9,7 +9,6 @@ corpus.py, then index.py, then answer.py, and this same command starts working.
 """
 
 import argparse
-import os
 import sys
 import time
 from pathlib import Path
@@ -47,12 +46,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--show-chunks", action="store_true", help="print the retrieved text, not just the citations")
     args = parser.parse_args(argv)
 
-    # Load OPENAI_API_KEY from the .env file next to this package.
+    # Load optional settings (e.g. LLM_API_BASE) from the .env file next to this package.
     load_dotenv(APP_DIR.parent / ".env")
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("No OPENAI_API_KEY found.", file=sys.stderr)
-        print("  cp .env.example .env    then put your key in it", file=sys.stderr)
-        return 2
 
     corpus_path = args.corpus
     if corpus_path is None:

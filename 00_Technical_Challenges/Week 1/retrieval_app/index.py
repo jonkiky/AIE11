@@ -1,29 +1,65 @@
 """Stage 3 and 4: embed the chunks, store them, and search them.
 
-YOUR CODE GOES HERE. `Hit` and the OpenAI client are written for you, because
+YOUR CODE GOES HERE. `Hit` and the LiteLLM client are written for you, because
 plumbing is not the lesson. `embed_texts`, `cosine_similarity`, `build_index`
 and `search` are the lesson.
 """
 
+import os
 from dataclasses import dataclass
+from types import SimpleNamespace
 
+import litellm
 import numpy as np
-from openai import OpenAI
 
-EMBEDDING_MODEL = "text-embedding-3-small"
-
-_cached: OpenAI | None = None
+EMBEDDING_MODEL = "ollama/qwen3-embedding:0.6b"
 
 
-def client() -> OpenAI:
-    """The OpenAI client, built on first use and reused after that.
+class _Embeddings:
+    def __init__(self, api_base: str):
+        self._api_base = api_base
+
+    def create(self, input: list[str], model: str, **kwargs):
+        response = litellm.embedding(model=model, input=input, api_base=self._api_base, **kwargs)
+        # Ollama returns plain dicts; expose `.embedding` like the OpenAI SDK does.
+        response.data = [
+            SimpleNamespace(**d) if isinstance(d, dict) else d for d in response.data
+        ]
+        return response
+
+
+class _Completions:
+    def __init__(self, api_base: str):
+        self._api_base = api_base
+
+    def create(self, model: str, messages: list[dict], **kwargs):
+        return litellm.completion(model=model, messages=messages, api_base=self._api_base, **kwargs)
+
+
+class LiteLLMClient:
+    """A small OpenAI-shaped wrapper around LiteLLM.
+
+    Supports `client().embeddings.create(...)` and
+    `client().chat.completions.create(...)`, so the hints below still apply.
+    """
+
+    def __init__(self, api_base: str):
+        self.embeddings = _Embeddings(api_base)
+        self.chat = SimpleNamespace(completions=_Completions(api_base))
+
+
+_cached: LiteLLMClient | None = None
+
+
+def client() -> LiteLLMClient:
+    """The LiteLLM client, built on first use and reused after that.
 
     It is built lazily, not at import time, so that .env has already been
-    loaded by the time it looks for OPENAI_API_KEY.
+    loaded by the time it looks for LLM_API_BASE (defaults to local Ollama).
     """
     global _cached
     if _cached is None:
-        _cached = OpenAI()
+        _cached = LiteLLMClient(os.getenv("LLM_API_BASE", "http://localhost:11434"))
     return _cached
 
 
@@ -53,7 +89,7 @@ def embed_texts(texts: list[str]) -> np.ndarray:
             do NOT loop and call once per chunk.
 
     Returns:
-        An array of shape (len(texts), 1536), one row per input string,
+        An array of shape (len(texts), 1024), one row per input string,
         in the same order as `texts`.
 
     Hint: `client().embeddings.create(input=texts, model=EMBEDDING_MODEL)`.

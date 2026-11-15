@@ -6,7 +6,7 @@ in the pipeline to change and often the most effective.
 
 from .index import Hit, client
 
-CHAT_MODEL = "gpt-4.1-mini"
+CHAT_MODEL = "ollama/qwen3:4b-instruct"
 
 
 def build_messages(question: str, hits: list[Hit]) -> list[dict]:
