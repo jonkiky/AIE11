@@ -69,8 +69,7 @@ def main(argv: list[str] | None = None) -> int:
 
     text = corpus_stage.load_corpus(corpus_path)
     chunks = corpus_stage.split_corpus(text)
-    # Both numbers are printed on purpose. Your chunk count is checkable from
-    # the character count: see "Does my splitter work?" in the README.
+    # Chunk count depends on line and period boundaries, not just character count.
     print(f"corpus {corpus_path.name}: {len(text):,} characters -> {len(chunks)} chunks", file=sys.stderr, flush=True)
 
     matrix = index_stage.build_index(chunks)

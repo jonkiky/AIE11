@@ -1,6 +1,6 @@
 """Stage 1 and 2: load the source text, and split it into chunks.
 
-YOUR CODE GOES HERE. Both functions below raise NotImplementedError.
+YOUR CODE GOES HERE. `load_corpus` still raises NotImplementedError.
 You saw working versions of both in Session 2's `aimakerspace/text_utils.py`:
 read it, understand it, then write your own. Copying it verbatim is allowed;
 not being able to explain it is not.
@@ -27,24 +27,39 @@ def load_corpus(path: Path) -> str:
     raise NotImplementedError("Write load_corpus() in retrieval_app/corpus.py")
 
 
-def split_corpus(text: str, chunk_size: int = 1000, chunk_overlap: int = 200) -> list[str]:
-    """Split one long string into a list of overlapping chunks.
+def split_corpus(text: str, chunk_size: int = 1000) -> list[str]:
+    """Split each nonblank line independently, without overlap.
 
     Args:
         text: the whole corpus, from load_corpus().
-        chunk_size: how many characters in each chunk.
-        chunk_overlap: how many characters each chunk repeats from the last one.
+        chunk_size: target number of characters per chunk, not a hard limit.
 
     Returns:
-        A list of strings.
+        Chunks with surrounding whitespace removed. Short lines stay separate.
+        Long lines split after the last period within chunk_size, or after the
+        next period if none fits. A remainder without periods stays intact,
+        even if it exceeds chunk_size. Only literal periods are boundaries.
 
-    Your check, for any corpus: a loop stepping by (chunk_size - chunk_overlap)
-    over N characters produces ceil(N / (chunk_size - chunk_overlap)) chunks.
-    The app prints both numbers, so you can verify the count without being told
-    the answer. The shipped guide is 16,206 characters, which is 21 chunks on
-    the defaults above.
-
-    Hint: a range() that steps by (chunk_size - chunk_overlap), slicing as it
-    goes. Why does the step subtract the overlap rather than add it?
+    Raises:
+        ValueError: if chunk_size is not positive.
     """
-    raise NotImplementedError("Write split_corpus() in retrieval_app/corpus.py")
+    if chunk_size <= 0:
+        raise ValueError("chunk_size must be greater than zero")
+
+    chunks = []
+    for line in text.splitlines():
+        line = line.strip()
+        start = 0
+        while start < len(line):
+            end = len(line)
+            if end - start > chunk_size:
+                period = line.rfind(".", start, start + chunk_size)
+                if period == -1:
+                    period = line.find(".", start + chunk_size)
+                if period != -1:
+                    end = period + 1
+            chunks.append(line[start:end].strip())
+            start = end
+            while start < len(line) and line[start].isspace():
+                start += 1
+    return chunks

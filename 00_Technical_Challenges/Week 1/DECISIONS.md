@@ -6,13 +6,13 @@ One row one decision. This week is the first one. By Week 5 this file will expla
 
 **What I changed**
 
-> One sentence.
+> `split_corpus` now keeps each nonblank input line separate and splits long lines after the nearest suitable period, without overlap.
 
 **Why**
 
-> Which of your failures it targeted, and the before/after score.
+> This is intended to avoid breaking sentences mid-thought and combining separate book lines into one chunk. Before/after retrieval scores have not been measured yet.
 
 **What would change my mind**
 
-> The condition under which you would undo it.
+> If evaluation shows worse retrieval than fixed-size overlapping chunks, or period-based splitting creates poor boundaries (for example around abbreviations), I would compare a sentence-aware splitter or adjust the chunking strategy.
 
