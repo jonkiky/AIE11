@@ -6,11 +6,11 @@ One row one decision. This week is the first one. By Week 5 this file will expla
 
 **What I changed**
 
-> `split_corpus` now keeps each nonblank input line separate and splits long lines after the nearest suitable period, without overlap.
+> `load_corpus` now returns the UTF-8 text as a list of lines, and `split_corpus` accepts that list, keeps each nonblank line separate, and splits long lines after the nearest suitable period without overlap.
 
 **Why**
 
-> This is intended to avoid breaking sentences mid-thought and combining separate book lines into one chunk. Before/after retrieval scores have not been measured yet.
+> Passing lines between the loader and splitter preserves the book's line boundaries, so separate lines are not combined. Period-based splitting is intended to avoid breaking sentences mid-thought. Before/after retrieval scores have not been measured yet.
 
 **What would change my mind**
 

@@ -67,10 +67,10 @@ def main(argv: list[str] | None = None) -> int:
 
     started = time.perf_counter()
 
-    text = corpus_stage.load_corpus(corpus_path)
-    chunks = corpus_stage.split_corpus(text)
+    lines = corpus_stage.load_corpus(corpus_path)
+    chunks = corpus_stage.split_corpus(lines)
     # Chunk count depends on line and period boundaries, not just character count.
-    print(f"corpus {corpus_path.name}: {len(text):,} characters -> {len(chunks)} chunks", file=sys.stderr, flush=True)
+    print(f"corpus {corpus_path.name}: {len(lines):,} lines -> {len(chunks)} chunks", file=sys.stderr, flush=True)
 
     matrix = index_stage.build_index(chunks)
     indexed = time.perf_counter()

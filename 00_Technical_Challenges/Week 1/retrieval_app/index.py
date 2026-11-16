@@ -13,6 +13,7 @@ import litellm
 import numpy as np
 
 EMBEDDING_MODEL = "ollama/qwen3-embedding:0.6b"
+EMBEDDING_DIMENSIONS = 1024
 
 
 class _Embeddings:
@@ -97,16 +98,29 @@ def embed_texts(texts: list[str]) -> np.ndarray:
     result in np.array(). Print `response.usage` once — knowing what a corpus
     costs to embed is the number that decides architecture at scale.
     """
-    raise NotImplementedError("Write embed_texts() in retrieval_app/index.py")
+    if not texts:
+        return np.empty((0, EMBEDDING_DIMENSIONS), dtype=np.float32)
+
+    response = client().embeddings.create(input=texts, model=EMBEDDING_MODEL)
+    if len(response.data) != len(texts):
+        raise ValueError(
+            f"Expected {len(texts)} embeddings, received {len(response.data)}"
+        )
+    data = response.data
+    if all(hasattr(item, "index") for item in data):
+        data = sorted(data, key=lambda item: item.index)
+    return np.asarray([item.embedding for item in data], dtype=np.float32)
 
 
 def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
     """How similar are two vectors? 1.0 is identical, 0.0 is unrelated.
 
-    Hint: the dot product, divided by the product of the two norms.
-    NumPy has `np.dot` and `np.linalg.norm`.
+    A zero vector has no direction, so its similarity is defined here as 0.0.
     """
-    raise NotImplementedError("Write cosine_similarity() in retrieval_app/index.py")
+    norm_product = np.linalg.norm(a) * np.linalg.norm(b)
+    if norm_product == 0:
+        return 0.0
+    return float(np.dot(a, b) / norm_product)
 
 
 def build_index(chunks: list[str]) -> np.ndarray:
@@ -123,7 +137,7 @@ def build_index(chunks: list[str]) -> np.ndarray:
     Hint: this is mostly a call to embed_texts(). Notice that it happens once
     per process, and that a fresh process has no memory of the last one.
     """
-    raise NotImplementedError("Write build_index() in retrieval_app/index.py")
+    return embed_texts(chunks)
 
 
 def search(query: str, chunks: list[str], matrix: np.ndarray, k: int = 3) -> list[Hit]:
@@ -146,4 +160,21 @@ def search(query: str, chunks: list[str], matrix: np.ndarray, k: int = 3) -> lis
       - Read the signature again: it says "up to k". Nothing here forces you to
         return exactly k. That freedom is the whole of Step 4's threshold option.
     """
-    raise NotImplementedError("Write search() in retrieval_app/index.py")
+    if k <= 0:
+        return []
+
+    vectors = np.asarray(matrix)
+    if vectors.ndim != 2 or vectors.shape[0] != len(chunks):
+        raise ValueError("matrix must have one embedding row per chunk")
+    if not chunks:
+        return []
+
+    query_vector = embed_texts([query])[0]
+    if vectors.shape[1] != query_vector.shape[0]:
+        raise ValueError("query and chunk embeddings must have the same dimensions")
+
+    hits = [
+        Hit(chunk_id=chunk_id, text=text, score=cosine_similarity(query_vector, vector))
+        for chunk_id, (text, vector) in enumerate(zip(chunks, vectors))
+    ]
+    return sorted(hits, key=lambda hit: hit.score, reverse=True)[:k]

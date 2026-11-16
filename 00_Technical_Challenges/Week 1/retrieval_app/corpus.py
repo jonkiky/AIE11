@@ -1,37 +1,41 @@
 """Stage 1 and 2: load the source text, and split it into chunks.
 
-YOUR CODE GOES HERE. `load_corpus` still raises NotImplementedError.
-You saw working versions of both in Session 2's `aimakerspace/text_utils.py`:
-read it, understand it, then write your own. Copying it verbatim is allowed;
-not being able to explain it is not.
+The loader returns lines, and the splitter turns those lines into chunks.
+Session 2's `aimakerspace/text_utils.py` is a reference for these stages.
 
 Neither function knows or cares what your corpus is about. That is the point:
 swap the .txt in data/ and nothing in this file should need to change.
+
+
+
+
 """
 
 from pathlib import Path
 
 
-def load_corpus(path: Path) -> str:
-    """Read a .txt file and return its entire contents as one string.
+def load_corpus(path: Path) -> list[str]:
+    """Read a UTF-8 .txt file and return its lines.
 
     Args:
         path: the .txt file to read, whichever corpus the app was pointed at.
 
     Returns:
-        The whole file as a single string.
-
-    Hint: this is three lines. `open()`, or `Path.read_text()`. Mind the
-    encoding: read it as utf-8, and your own corpus may need you to mean it.
+        Nonblank lines without newline characters. An empty file returns an
+        empty list.
     """
-    raise NotImplementedError("Write load_corpus() in retrieval_app/corpus.py")
+    return [
+        line
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
-def split_corpus(text: str, chunk_size: int = 1000) -> list[str]:
+def split_corpus(lines: list[str], chunk_size: int = 1000) -> list[str]:
     """Split each nonblank line independently, without overlap.
 
     Args:
-        text: the whole corpus, from load_corpus().
+        lines: the corpus lines, from load_corpus().
         chunk_size: target number of characters per chunk, not a hard limit.
 
     Returns:
@@ -47,7 +51,7 @@ def split_corpus(text: str, chunk_size: int = 1000) -> list[str]:
         raise ValueError("chunk_size must be greater than zero")
 
     chunks = []
-    for line in text.splitlines():
+    for line in lines:
         line = line.strip()
         start = 0
         while start < len(line):
