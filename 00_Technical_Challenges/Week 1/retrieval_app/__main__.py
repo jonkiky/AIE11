@@ -112,6 +112,17 @@ def main(argv: list[str] | None = None) -> int:
         if args.show_chunks:
             print(f"      {' '.join(hit.text.split())[:400]}...")
 
+    if wiki_index is not None:
+        topics_by_id = {topic.topic_id: topic for topic in wiki_index.topics}
+        picked = dict.fromkeys(topic_id for hit in hits for topic_id in hit.topic_ids)
+        print("\nWiki topics picked:")
+        if not picked:
+            print("  (none matched)")
+        for topic_id in picked:
+            topic = topics_by_id[topic_id]
+            ranges = ", ".join(f"L{start}-L{end}" for start, end in topic.ranges)
+            print(f"  {topic_id} · {topic.title} ({ranges})")
+
     sys.stdout.flush()
     print(f"\ntotal {time.perf_counter() - started:.2f}s", file=sys.stderr, flush=True)
     return 0
