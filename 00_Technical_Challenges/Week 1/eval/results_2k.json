@@ -1,0 +1,184 @@
+{
+  "score_type": "Evidence-verified key-point coverage of the reference (0-100), not calibrated accuracy",
+  "evals": "/Users/cheny39/Documents/bootcamp/AIE11/00_Technical_Challenges/Week 1/eval/evals.json",
+  "corpus": "/Users/cheny39/Documents/bootcamp/AIE11/00_Technical_Challenges/Week 1/data/Think_Like_A_CEO_kb.txt",
+  "embedding_model": "ollama/qwen3-embedding:0.6b",
+  "generator_model": "ollama/qwen3:4b-instruct",
+  "judge_model": "ollama/qwen3:4b-instruct",
+  "k": 3,
+  "total": 13,
+  "mean_score": 49.353846153846156,
+  "results": [
+    {
+      "id": 1,
+      "prompt": "What three things should you remember when communicating with a CEO or senior leader?",
+      "expected_output": "They have limited time, so be concise and clearly state what you need. They frequently switch contexts, so briefly remind them of relevant background. They focus on the whole business, so connect your proposal to broader business goals.",
+      "actual_output": "The three things to remember when communicating with a CEO or senior leader are:\n\n1. Know what your CEO cares about and why, so you can align your communication with their priorities [chunk 19].  \n2. Frame your comments in the bigger picture, as your CEO cares about the business as a whole [chunk 25].  \n3. Adjust your communication style to suit senior leaders, focusing on getting to the point to communicate more effectively [chunk 120].",
+      "score": 33.3,
+      "reason": "- missing: They have limited time, so be concise and clearly state what you need.\n- missing: They frequently switch contexts, so briefly remind them of relevant background.\n- covered: They focus on the whole business, so connect your proposal to broader business goals. (evidence: \"Frame your comments in the bigger picture, as your CEO cares about the business as a whole [chunk 25].\")",
+      "retrieved_chunk_ids": [
+        19,
+        25,
+        120
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Why might senior leadership reject an idea that could increase revenue?",
+      "expected_output": "Senior leaders evaluate the impact on the entire company. An idea might generate revenue for one department while requiring too many resources from others, making its overall cost too high.",
+      "actual_output": "Senior leadership might reject an idea that could increase revenue because it may require significant resources that conflict with the priorities of other departments. For example, the idea might demand substantial time or budget from engineering, which values stability and reliability over rapid development, or it might conflict with the CFO's goal of cutting costs, even if marketing sees value in spending on events or swag. As one executive noted, while the idea is good, it has \"too high a cost for our company as a whole\" [chunk 29]. This resource conflict, combined with differing departmental priorities, can lead to rejection despite the potential for increased revenue.",
+      "score": 100.0,
+      "reason": "- covered: Senior leaders evaluate the impact on the entire company (evidence: \"Senior leadership might reject an idea that could increase revenue because it may require significant resources that conflict with the priorities of other departments.\")\n- covered: An idea might generate revenue for one department while requiring too many resources from others, making its overall cost too high (evidence: \"it may require significant resources that conflict with the priorities of other departments. As one executive noted, while the idea is good, it has \"too high a cost for our company as a whole\" [chunk 29].\")",
+      "retrieved_chunk_ids": [
+        28,
+        29,
+        104
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How can you develop a broader perspective on your company?",
+      "expected_output": "Step back from daily tasks and consider how your work supports company goals. Get to know colleagues in other departments, including their responsibilities, measures of success, and challenges. Reserve time to reflect on how the different parts of the business fit together.",
+      "actual_output": "You can develop a broader perspective on your company by stopping periodically during your day-to-day work to zoom out and reflect on how your current tasks fit into the larger picture of the company, such as considering how your work contributes to the company's overall success and what broader impacts a successful outcome might have [chunk 32]. Additionally, you can gain a broader understanding by getting to know coworkers from other parts of the business, asking them about their roles, how they define success, and the challenges they face, which helps you see how different parts of the business interconnect [chunk 33].",
+      "score": 83.3,
+      "reason": "- covered: Step back from daily tasks and consider how your work supports company goals (evidence: \"You can develop a broader perspective on your company by stopping periodically during your day-to-day work to zoom out and reflect on how your current tasks fit into the larger picture of the company, such as considering how your work contributes to the company's overall success and what broader impacts a successful outcome might have\")\n- covered: Get to know colleagues in other departments, including their responsibilities, measures of success, and challenges (evidence: \"you can gain a broader understanding by getting to know coworkers from other parts of the business, asking them about their roles, how they define success, and the challenges they face, which helps you see how different parts of the business interconnect\")\n- partial: Reserve time to reflect on how the different parts of the business fit together (evidence: \"You can develop a broader perspective on your company by stopping periodically during your day-to-day work to zoom out and reflect on how your current tasks fit into the larger picture of the company\")",
+      "retrieved_chunk_ids": [
+        32,
+        33,
+        56
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "How should you approach reversible decisions differently from decisions that are difficult to reverse?",
+      "expected_output": "For easily reversible decisions, you can move forward more quickly and observe the results. Decisions that are difficult to reverse require more analysis, including the cost of undoing them and their financial and stakeholder impacts.",
+      "actual_output": "You should approach reversible decisions with less scrutiny and potentially more agility, as they can be easily undone if they turn out to be a bad idea [chunk 37]. This allows you to move forward and observe outcomes without significant risk or long-term commitment. In contrast, decisions that are difficult to reverse require more thought and careful evaluation of their financial impact and effects on stakeholders, as reversing them would be costly or complex [chunk 38]. Therefore, reversible decisions can be tested through pilots or small-scale implementations to assess outcomes before full-scale rollout, while irreversible decisions demand deeper analysis and more comprehensive planning to ensure alignment with long-term goals.",
+      "score": 100.0,
+      "reason": "- covered: For easily reversible decisions, you can move forward more quickly and observe the results. (evidence: \"You should approach reversible decisions with less scrutiny and potentially more agility, as they can be easily undone if they turn out to be a bad idea [chunk 37]. This allows you to move forward and observe outcomes without significant risk or long-term commitment.\")\n- covered: Decisions that are difficult to reverse require more analysis, including the cost of undoing them and their financial and stakeholder impacts. (evidence: \"In contrast, decisions that are difficult to reverse require more thought and careful evaluation of their financial impact and effects on stakeholders, as reversing them would be costly or complex [chunk 38].\")",
+      "retrieved_chunk_ids": [
+        38,
+        37,
+        63
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "How can an effort-versus-impact grid help you prioritize projects?",
+      "expected_output": "Classify projects by how much effort they require and how much impact they could have. Prioritize low-effort, high-impact projects, selectively consider high-effort, high-impact projects, and consider deferring low-impact projects.",
+      "actual_output": "An effort-versus-impact grid helps you prioritize projects by classifying them based on their effort (high or low) and impact (high or low). This allows you to identify which projects are low effort and high impact, which are considered the \"sweet spot\" or \"Holy Grail\" for efficient prioritization [chunk 40]. Projects that are low impact can be deferred, while those with high effort and high impact may require more attention [chunk 40]. By using this grid, you can make more informed decisions about which initiatives to pursue [chunk 39].",
+      "score": 87.5,
+      "reason": "- covered: Classify projects by how much effort they require and how much impact they could have (evidence: \"An effort-versus-impact grid helps you prioritize projects by classifying them based on their effort (high or low) and impact (high or low).\")\n- covered: Prioritize low-effort, high-impact projects (evidence: \"This allows you to identify which projects are low effort and high impact, which are considered the \"sweet spot\" or \"Holy Grail\" for efficient prioritization\")\n- partial: Selectively consider high-effort, high-impact projects (evidence: \"Projects that are high effort and high impact may require more attention\")\n- covered: Consider deferring low-impact projects (evidence: \"Projects that are low impact can be deferred\")",
+      "retrieved_chunk_ids": [
+        40,
+        39,
+        6
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "How do you use the benefits, costs, and mitigations framework to compare options?",
+      "expected_output": "List each option's benefits, costs, and specific steps to reduce its costs or risks. Include financial costs, resources, energy, stakeholder dissatisfaction, and potential risks. Involve others to strengthen the analysis.",
+      "actual_output": "To compare options using the benefits, costs, and mitigations framework, you first create a chart with the options (e.g., Option A and Option B) at the top. Then, you list the benefits, costs, and mitigations for each option side by side. This allows you to systematically evaluate each option based on its advantages, financial or operational expenses, and strategies to reduce risks or costs. Finally, you identify specific steps to mitigate costs and risks, such as considering long-term versus short-term trade-offs or addressing costs upfront [chunk 42][chunk 45]. This structured approach helps in making an informed decision between the options.",
+      "score": 50.0,
+      "reason": "- covered: List each option's benefits, costs, and specific steps to reduce its costs or risks (evidence: \"you list the benefits, costs, and mitigations for each option side by side. This allows you to systematically evaluate each option based on its advantages, financial or operational expenses, and strategies to reduce risks or costs. Finally, you identify specific steps to mitigate costs and risks\")\n- partial: Include financial costs, resources, energy, stakeholder dissatisfaction, and potential risks (evidence: \"financial or operational expenses, and strategies to reduce risks or costs\")\n- missing: Involve others to strengthen the analysis",
+      "retrieved_chunk_ids": [
+        41,
+        42,
+        45
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "What practices does the course recommend for improving strategic thinking?",
+      "expected_output": "Block time on your calendar for strategic thinking. Learn about societal, technological, and industry trends through reading and conversations. Reflect on how those trends affect your company, where future growth could come from, and which strengths or capability gaps matter.",
+      "actual_output": "The course recommends setting aside time specifically for strategic thinking, as most people's schedules are filled with meetings and emails, and dedicated time is needed to develop these skills [chunk 51]. Additionally, it suggests discussing strategic thinking questions with coworkers or writing them down in a journal [chunk 57]. These practices are presented as methods to improve strategic thinking.",
+      "score": 33.3,
+      "reason": "- covered: Block time on your calendar for strategic thinking (evidence: \"The course recommends setting aside time specifically for strategic thinking, as most people's schedules are filled with meetings and emails, and dedicated time is needed to develop these skills\")\n- missing: Learn about societal, technological, and industry trends through reading and conversations\n- missing: Reflect on how those trends affect your company, where future growth could come from, and which strengths or capability gaps matter",
+      "retrieved_chunk_ids": [
+        50,
+        57,
+        51
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "How can you make decisions faster and more confidently when information is incomplete?",
+      "expected_output": "Establish clear decision criteria, use a pilot or test when possible to gather evidence, and set deadlines for collecting information and making the decision. Avoid waiting indefinitely, because delaying a decision also has consequences.",
+      "actual_output": "You can make decisions faster and more confidently when information is incomplete by developing a bias for action, which involves learning to make decisions even when you don't have all the information [chunk 60]. Additionally, setting a time limit can create urgency and help drive action, preventing delays caused by waiting for more information [chunk 66]. A test or pilot can also be used to gather limited information and make progress without waiting for complete data [chunk 63].",
+      "score": 37.5,
+      "reason": "- missing: Establish clear decision criteria\n- covered: use a pilot or test when possible to gather evidence (evidence: \"A test or pilot can also be used to gather limited information and make progress without waiting for complete data\")\n- partial: set deadlines for collecting information and making the decision (evidence: \"Setting a time limit can create urgency and help drive action, preventing delays caused by waiting for more information\")\n- missing: Avoid waiting indefinitely, because delaying a decision also has consequences",
+      "retrieved_chunk_ids": [
+        63,
+        60,
+        66
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "How can leaders build self-awareness and turn it into practical improvement?",
+      "expected_output": "Keep a journal to identify strengths, weaknesses, and situations that energize or drain you. Gather feedback from colleagues or through a 360-degree feedback process, compare it with your self-perception, identify recurring themes, and choose one specific behavior to practice.",
+      "actual_output": "Leaders can build self-awareness by reflecting on their own leadership style and identifying their strengths and weaknesses [chunk 78]. This self-awareness enables them to capitalize on their strengths and work to improve or manage their weaknesses [chunk 78]. Additionally, self-awareness helps leaders relate to others by allowing them to be vulnerable and share their own quirks and deficiencies, which fosters an environment where others can also be open [chunk 76]. This relational aspect supports practical improvement through increased trust and openness within a team.",
+      "score": 0.0,
+      "reason": "- missing: Keep a journal to identify strengths, weaknesses, and situations that energize or drain you\n- missing: Gather feedback from colleagues or through a 360-degree feedback process\n- missing: Compare it with your self-perception, identify recurring themes\n- missing: Choose one specific behavior to practice",
+      "retrieved_chunk_ids": [
+        5,
+        78,
+        76
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "How can you present a problem to senior leadership in a way that helps move it toward a solution?",
+      "expected_output": "Clarify the problem, its business impact, known causes, and what still needs investigation. Use the five whys when helpful to identify root causes, and bring possible solutions. Lead with your recommendation, support it with two or three key points, and tailor your communication to the audience.",
+      "actual_output": "You can present a problem to senior leadership in a way that helps move it toward a solution by first thinking through the issue thoroughly and bringing a few viable options for solving it [chunk 99]. This approach demonstrates initiative and preparedness, making you more effective when communicating with senior executives [chunk 101]. Additionally, attempting to resolve the issue independently before escalating it to senior leadership shows responsibility and helps ensure that the problem is presented with context and potential solutions [chunk 89].",
+      "score": 16.7,
+      "reason": "- partial: Clarify the problem, its business impact, known causes, and what still needs investigation (evidence: \"You can present a problem to senior leadership in a way that helps move it toward a solution by first thinking through the issue thoroughly and bringing a few viable options for solving it\")\n- missing: Use the five whys when helpful to identify root causes\n- partial: Bring possible solutions (evidence: \"bringing a few viable options for solving it\")\n- missing: Lead with your recommendation\n- missing: Support it with two or three key points\n- missing: Tailor your communication to the audience",
+      "retrieved_chunk_ids": [
+        99,
+        101,
+        89
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "What is the recipe for a traditional Neapolitan pizza dough?",
+      "expected_output": "The provided corpus does not cover pizza recipes, so it cannot answer this question.",
+      "actual_output": "I don't have information about that in the provided context.",
+      "score": 50.0,
+      "reason": "- partial: The provided corpus does not cover pizza recipes, so it cannot answer this question. (evidence: \"I don't have information about that in the provided context.\")",
+      "retrieved_chunk_ids": [
+        7,
+        63,
+        126
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "What is the orbital period of Neptune?",
+      "expected_output": "The provided corpus does not cover planetary orbital periods, so it cannot answer this question.",
+      "actual_output": "I don't have information about that in the provided context.",
+      "score": 0.0,
+      "reason": "- missing: The provided corpus does not cover planetary orbital periods (judge said covered, but its quote is not in the answer)\n- missing: It cannot answer this question (judge said covered, but its quote is not in the answer)",
+      "retrieved_chunk_ids": [
+        7,
+        93,
+        0
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "How do I implement a matrix multiplication kernel in CUDA?",
+      "expected_output": "The provided corpus does not cover CUDA programming, so it cannot answer this question.",
+      "actual_output": "I don't have information about that in the provided context.",
+      "score": 50.0,
+      "reason": "- partial: The provided corpus does not cover CUDA programming, so it cannot answer this question. (evidence: \"I don't have information about that in the provided context.\")",
+      "retrieved_chunk_ids": [
+        93,
+        126,
+        0
+      ]
+    }
+  ],
+  "chunk_size_characters": 2000,
+  "chunk_size_is_target_not_limit": true
+}
