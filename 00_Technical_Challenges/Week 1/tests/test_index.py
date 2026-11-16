@@ -80,6 +80,37 @@ class SimilarityTests(unittest.TestCase):
 
 
 class SearchTests(unittest.TestCase):
+    def setUp(self):
+        self.encode = Mock(return_value=SimpleNamespace(ids=[1]))
+        tokenizer_patch = patch.object(
+            index,
+            "_query_tokenizer",
+            return_value={"tokenizer": SimpleNamespace(encode=self.encode)},
+        )
+        tokenizer_patch.start()
+        self.addCleanup(tokenizer_patch.stop)
+
+    def test_query_at_token_limit_is_allowed(self):
+        self.encode.return_value = SimpleNamespace(ids=[1] * 32_768)
+        with patch.object(index, "embed_texts", return_value=np.array([[1.0, 0.0]])):
+            hits = search("at the limit", ["chunk"], np.array([[1.0, 0.0]]))
+
+        self.assertEqual(hits, [Hit(chunk_id=0, text="chunk", score=1.0)])
+        self.encode.assert_called_once_with("at the limit", add_special_tokens=False)
+
+    def test_query_above_limit_raises_before_embedding_or_early_returns(self):
+        self.encode.return_value = SimpleNamespace(ids=[1] * 32_769)
+        with patch.object(index, "embed_texts") as embed:
+            for chunks, matrix, k in [
+                (["chunk"], np.ones((1, 2)), 3),
+                ([], np.empty((0, EMBEDDING_DIMENSIONS)), 3),
+                (["chunk"], np.ones((1, 2)), 0),
+            ]:
+                with self.subTest(chunks=chunks, k=k):
+                    with self.assertRaisesRegex(ValueError, "32,768.*32,769"):
+                        search("too long", chunks, matrix, k=k)
+        embed.assert_not_called()
+
     def test_returns_hits_by_descending_similarity(self):
         vectors = np.zeros((3, EMBEDDING_DIMENSIONS), dtype=np.float32)
         vectors[0, 0] = 1

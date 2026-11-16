@@ -7,6 +7,7 @@ and `search` are the lesson.
 
 import os
 from dataclasses import dataclass
+from functools import lru_cache
 from types import SimpleNamespace
 
 import litellm
@@ -14,6 +15,13 @@ import numpy as np
 
 EMBEDDING_MODEL = "ollama/qwen3-embedding:0.6b"
 EMBEDDING_DIMENSIONS = 1024
+MAX_QUERY_TOKENS = 32_768
+
+
+@lru_cache(maxsize=1)
+def _query_tokenizer() -> dict:
+    """Load the Qwen tokenizer locally, downloading its files on first use."""
+    return litellm.create_pretrained_tokenizer("Qwen/Qwen3-Embedding-0.6B")
 
 
 class _Embeddings:
@@ -144,13 +152,17 @@ def search(query: str, chunks: list[str], matrix: np.ndarray, k: int = 3) -> lis
     """Find the k chunks most similar to the query.
 
     Args:
-        query: the user's question, as typed.
+        query: the user's question, limited to 32,768 Qwen tokens.
         chunks: the chunk texts.
         matrix: the embedding matrix from build_index().
         k: how many hits to return.
 
     Returns:
         Up to k Hits, most similar first.
+
+    Raises:
+        ValueError: if the query exceeds 32,768 tokens or the matrix shape
+            does not match the chunks or query embedding.
 
     Hints:
       - Embed the query with the SAME model you built the index with. A query
@@ -160,6 +172,15 @@ def search(query: str, chunks: list[str], matrix: np.ndarray, k: int = 3) -> lis
       - Read the signature again: it says "up to k". Nothing here forces you to
         return exactly k. That freedom is the whole of Step 4's threshold option.
     """
+    token_count = len(
+        _query_tokenizer()["tokenizer"].encode(query, add_special_tokens=False).ids
+    )
+    if token_count > MAX_QUERY_TOKENS:
+        raise ValueError(
+            f"query exceeds the {MAX_QUERY_TOKENS:,}-token limit "
+            f"({token_count:,} tokens)"
+        )
+
     if k <= 0:
         return []
 
