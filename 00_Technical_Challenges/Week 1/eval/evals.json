@@ -1,0 +1,54 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "prompt": "What three things should you remember when communicating with a CEO or senior leader?",
+      "expected_output": "They have limited time, so be concise and clearly state what you need. They frequently switch contexts, so briefly remind them of relevant background. They focus on the whole business, so connect your proposal to broader business goals."
+    },
+    {
+      "id": 2,
+      "prompt": "Why might senior leadership reject an idea that could increase revenue?",
+      "expected_output": "Senior leaders evaluate the impact on the entire company. An idea might generate revenue for one department while requiring too many resources from others, making its overall cost too high."
+    },
+    {
+      "id": 3,
+      "prompt": "How can you develop a broader perspective on your company?",
+      "expected_output": "Step back from daily tasks and consider how your work supports company goals. Get to know colleagues in other departments, including their responsibilities, measures of success, and challenges. Reserve time to reflect on how the different parts of the business fit together."
+    },
+    {
+      "id": 4,
+      "prompt": "How should you approach reversible decisions differently from decisions that are difficult to reverse?",
+      "expected_output": "For easily reversible decisions, you can move forward more quickly and observe the results. Decisions that are difficult to reverse require more analysis, including the cost of undoing them and their financial and stakeholder impacts."
+    },
+    {
+      "id": 5,
+      "prompt": "How can an effort-versus-impact grid help you prioritize projects?",
+      "expected_output": "Classify projects by how much effort they require and how much impact they could have. Prioritize low-effort, high-impact projects, selectively consider high-effort, high-impact projects, and consider deferring low-impact projects."
+    },
+    {
+      "id": 6,
+      "prompt": "How do you use the benefits, costs, and mitigations framework to compare options?",
+      "expected_output": "List each option's benefits, costs, and specific steps to reduce its costs or risks. Include financial costs, resources, energy, stakeholder dissatisfaction, and potential risks. Involve others to strengthen the analysis."
+    },
+    {
+      "id": 7,
+      "prompt": "What practices does the course recommend for improving strategic thinking?",
+      "expected_output": "Block time on your calendar for strategic thinking. Learn about societal, technological, and industry trends through reading and conversations. Reflect on how those trends affect your company, where future growth could come from, and which strengths or capability gaps matter."
+    },
+    {
+      "id": 8,
+      "prompt": "How can you make decisions faster and more confidently when information is incomplete?",
+      "expected_output": "Establish clear decision criteria, use a pilot or test when possible to gather evidence, and set deadlines for collecting information and making the decision. Avoid waiting indefinitely, because delaying a decision also has consequences."
+    },
+    {
+      "id": 9,
+      "prompt": "How can leaders build self-awareness and turn it into practical improvement?",
+      "expected_output": "Keep a journal to identify strengths, weaknesses, and situations that energize or drain you. Gather feedback from colleagues or through a 360-degree feedback process, compare it with your self-perception, identify recurring themes, and choose one specific behavior to practice."
+    },
+    {
+      "id": 10,
+      "prompt": "How can you present a problem to senior leadership in a way that helps move it toward a solution?",
+      "expected_output": "Clarify the problem, its business impact, known causes, and what still needs investigation. Use the five whys when helpful to identify root causes, and bring possible solutions. Lead with your recommendation, support it with two or three key points, and tailor your communication to the audience."
+    }
+  ]
+}

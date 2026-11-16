@@ -34,7 +34,7 @@ def find_corpus() -> tuple[Path | None, list[Path]]:
         (the corpus, every .txt found). The first is None when there is not
         exactly one candidate, and then the caller explains what to do.
     """
-    found = sorted(DATA_DIR.glob("*.txt"))
+    found = sorted(DATA_DIR.glob("*_kb.txt"))
     return (found[0] if len(found) == 1 else None), found
 
 
