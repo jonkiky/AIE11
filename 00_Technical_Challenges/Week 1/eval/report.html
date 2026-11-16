@@ -109,9 +109,9 @@
           <div class="metric-note">Evaluated in this run</div>
         </div>
         <div class="metric">
-          <div class="metric-label">Retrieved per question</div>
+          <div class="metric-label" id="retrieval-label">Retrieved per question</div>
           <div class="metric-value" id="top-k"></div>
-          <div class="metric-note">Maximum chunks requested</div>
+          <div class="metric-note" id="retrieval-note">Maximum chunks requested</div>
         </div>
       </section>
       <aside class="notice">
@@ -205,6 +205,15 @@
         textElement("p", "reason", result.reason),
         textElement("p", "chunks", `Retrieved chunks: ${result.retrieved_chunk_ids.length ? result.retrieved_chunk_ids.join(", ") : "none"}`)
       );
+      if (Array.isArray(result.retrieved_topic_ids) && result.retrieved_topic_ids.length) {
+        judge.append(textElement("p", "chunks", `Wiki topics: ${result.retrieved_topic_ids.join(", ")}`));
+      }
+      if (Array.isArray(result.retrieved_line_ranges) && result.retrieved_line_ranges.length) {
+        judge.append(textElement(
+          "p", "chunks",
+          `Source lines: ${result.retrieved_line_ranges.map(([start, end]) => `L${start}-L${end}`).join(", ")}`
+        ));
+      }
       body.append(answers, judge);
       card.append(summary, body);
       return card;
@@ -224,7 +233,14 @@
       validate(data);
       document.getElementById("mean").textContent = `${data.mean_score.toFixed(1)} / 100`;
       document.getElementById("total").textContent = data.total;
-      document.getElementById("top-k").textContent = data.k;
+      const isWiki = data.retriever === "wiki";
+      document.getElementById("top-k").textContent = isWiki ? "Wiki" : data.k;
+      document.getElementById("retrieval-label").textContent = isWiki ? "Retrieval mode" : "Retrieved per question";
+      document.getElementById("retrieval-note").textContent = isWiki
+        ? (Number.isInteger(data.wiki_top_k)
+          ? `Top ${data.wiki_top_k} topic${data.wiki_top_k === 1 ? "" : "s"} per query`
+          : (data.wiki_strict_top1 ? "Top topic per query phrase" : "Top topics with near-tie rescue"))
+        : "Maximum chunks requested";
       document.getElementById("score-type").textContent = data.score_type;
       document.getElementById("bias").hidden = data.generator_model !== data.judge_model;
       const metadata = document.getElementById("metadata");

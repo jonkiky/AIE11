@@ -49,6 +49,21 @@
       "id": 10,
       "prompt": "How can you present a problem to senior leadership in a way that helps move it toward a solution?",
       "expected_output": "Clarify the problem, its business impact, known causes, and what still needs investigation. Use the five whys when helpful to identify root causes, and bring possible solutions. Lead with your recommendation, support it with two or three key points, and tailor your communication to the audience."
+    },
+    {
+      "id": 11,
+      "prompt": "What is the recipe for a traditional Neapolitan pizza dough?",
+      "expected_output": "The provided corpus does not cover pizza recipes, so it cannot answer this question."
+    },
+    {
+      "id": 12,
+      "prompt": "What is the orbital period of Neptune?",
+      "expected_output": "The provided corpus does not cover planetary orbital periods, so it cannot answer this question."
+    },
+    {
+      "id": 13,
+      "prompt": "How do I implement a matrix multiplication kernel in CUDA?",
+      "expected_output": "The provided corpus does not cover CUDA programming, so it cannot answer this question."
     }
   ]
 }

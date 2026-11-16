@@ -7,21 +7,15 @@ and `search` are the lesson.
 
 import os
 from dataclasses import dataclass
-from functools import lru_cache
 from types import SimpleNamespace
 
 import litellm
 import numpy as np
 
+from .tokens import MAX_QUERY_TOKENS, MAX_SOURCE_TOKENS, count_tokens, validate_query
+
 EMBEDDING_MODEL = "ollama/qwen3-embedding:0.6b"
 EMBEDDING_DIMENSIONS = 1024
-MAX_QUERY_TOKENS = 32_768
-
-
-@lru_cache(maxsize=1)
-def _query_tokenizer() -> dict:
-    """Load the Qwen tokenizer locally, downloading its files on first use."""
-    return litellm.create_pretrained_tokenizer("Qwen/Qwen3-Embedding-0.6B")
 
 
 class _Embeddings:
@@ -83,11 +77,17 @@ class Hit:
     chunk_id: int
     text: str
     score: float
+    label: str | None = None
+    topic_ids: tuple[str, ...] = ()
+    line_ranges: tuple[tuple[int, int], ...] = ()
+
+    def context_label(self) -> str:
+        return self.label or f"chunk {self.chunk_id}"
 
     def citation(self) -> str:
         """A short, human-readable label for this chunk. Printed under answers."""
         preview = " ".join(self.text.split())[:60]
-        return f"[chunk {self.chunk_id}] {preview}... (score {self.score:.3f})"
+        return f"[{self.context_label()}] {preview}... (score {self.score:.3f})"
 
 
 def embed_texts(texts: list[str]) -> np.ndarray:
@@ -145,6 +145,8 @@ def build_index(chunks: list[str]) -> np.ndarray:
     Hint: this is mostly a call to embed_texts(). Notice that it happens once
     per process, and that a fresh process has no memory of the last one.
     """
+    if any(count_tokens(chunk) > MAX_SOURCE_TOKENS for chunk in chunks):
+        raise ValueError(f"Corpus chunks must not exceed {MAX_SOURCE_TOKENS} tokens")
     return embed_texts(chunks)
 
 
@@ -172,14 +174,7 @@ def search(query: str, chunks: list[str], matrix: np.ndarray, k: int = 3) -> lis
       - Read the signature again: it says "up to k". Nothing here forces you to
         return exactly k. That freedom is the whole of Step 4's threshold option.
     """
-    token_count = len(
-        _query_tokenizer()["tokenizer"].encode(query, add_special_tokens=False).ids
-    )
-    if token_count > MAX_QUERY_TOKENS:
-        raise ValueError(
-            f"query exceeds the {MAX_QUERY_TOKENS:,}-token limit "
-            f"({token_count:,} tokens)"
-        )
+    validate_query(query)
 
     if k <= 0:
         return []

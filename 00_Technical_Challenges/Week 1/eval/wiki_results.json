@@ -1,0 +1,302 @@
+{
+  "score_type": "Evidence-verified key-point coverage of the reference (0-100), not calibrated accuracy",
+  "evals": "/Users/cheny39/Documents/bootcamp/AIE11/00_Technical_Challenges/Week 1/eval/evals.json",
+  "corpus": "/Users/cheny39/Documents/bootcamp/AIE11/00_Technical_Challenges/Week 1/data/Think_Like_A_CEO_kb.txt",
+  "embedding_model": "ollama/qwen3-embedding:0.6b",
+  "generator_model": "ollama/qwen3:4b-instruct",
+  "judge_model": "ollama/qwen3:4b-instruct",
+  "k": 3,
+  "retriever": "wiki",
+  "wiki_threshold": 0.55,
+  "wiki_delta": null,
+  "wiki_top_k": 3,
+  "wiki_strict_top1": false,
+  "total": 13,
+  "mean_score": 85.9,
+  "results": [
+    {
+      "id": 1,
+      "prompt": "What three things should you remember when communicating with a CEO or senior leader?",
+      "expected_output": "They have limited time, so be concise and clearly state what you need. They frequently switch contexts, so briefly remind them of relevant background. They focus on the whole business, so connect your proposal to broader business goals.",
+      "actual_output": "When communicating with a CEO or senior leader, you should remember the following three things:\n\n1. Be concise and clearly state what you want to do or what you need from them or others. For example, you might say, \"I've researched the options and I want to reach out to two companies to see if they want to explore a partnership. I want to know if you have any questions, and I'd like the green light to move forward.\" [T06 L21-L27]\n\n2. Start with key points of context about what you're working on, especially to remind the CEO of prior discussions. For example, you can add, \"When we talked the last time, we agreed that we'll need more distribution partners to grow our top line. I've researched the options, and I want to reach out to these two companies to see if they want to explore a partnership.\" [T07 L21-L27]\n\n3. Frame your comments in the bigger picture of the business, connecting your work to the overall success of the organization. For example, as an HR person, instead of saying \"I want to do an engagement survey,\" say, \"Engaged employees work harder and stay with the company longer. For us, that translates to more revenue and less turnover. So I'd like to launch an engagement survey to understand and improve our engagement so we can improve our business fundamentals.\" [T06 L21-L27]",
+      "score": 100.0,
+      "reason": "- covered: They have limited time, so be concise and clearly state what you need. (evidence: \"Be concise and clearly state what you want to do or what you need from them or others.\")\n- covered: They frequently switch contexts, so briefly remind them of relevant background. (evidence: \"Start with key points of context about what you're working on, especially to remind the CEO of prior discussions.\")\n- covered: They focus on the whole business, so connect your proposal to broader business goals. (evidence: \"Frame your comments in the bigger picture of the business, connecting your work to the overall success of the organization.\")",
+      "retrieved_chunk_ids": [
+        20,
+        48,
+        115,
+        119
+      ],
+      "retrieved_topic_ids": [
+        "T06",
+        "T11",
+        "T28",
+        "T30"
+      ],
+      "retrieved_line_ranges": [
+        [
+          21,
+          27
+        ],
+        [
+          49,
+          53
+        ],
+        [
+          116,
+          118
+        ],
+        [
+          120,
+          122
+        ]
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Why might senior leadership reject an idea that could increase revenue?",
+      "expected_output": "Senior leaders evaluate the impact on the entire company. An idea might generate revenue for one department while requiring too many resources from others, making its overall cost too high.",
+      "actual_output": "Senior leadership might reject an idea that could increase revenue if that idea requires a significant allocation of resources from other departments, thereby imposing a high cost on the company as a whole [T07 L30-L33]. While the idea may be beneficial, senior leaders consider the overall enterprise impact and ensure that initiatives do not disrupt or strain other critical areas of the business. This reflects their responsibility to balance innovation with the broader operational and financial health of the organization.",
+      "score": 100.0,
+      "reason": "- covered: Senior leaders evaluate the impact on the entire company (evidence: \"Senior leadership might reject an idea that could increase revenue if that idea requires a significant allocation of resources from other departments, thereby imposing a high cost on the company as a whole [T07 L30-L33]. While the idea may be beneficial, senior leaders consider the overall enterprise impact and ensure that initiatives do not disrupt or strain other critical areas of the business. This reflects their responsibility to balance innovation with the broader operational and financial health of the organization.\")\n- covered: An idea might generate revenue for one department while requiring too many resources from others, making its overall cost too high (evidence: \"Senior leadership might reject an idea that could increase revenue if that idea requires a significant allocation of resources from other departments, thereby imposing a high cost on the company as a whole [T07 L30-L33].\")",
+      "retrieved_chunk_ids": [
+        29
+      ],
+      "retrieved_topic_ids": [
+        "T07"
+      ],
+      "retrieved_line_ranges": [
+        [
+          30,
+          33
+        ]
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How can you develop a broader perspective on your company?",
+      "expected_output": "Step back from daily tasks and consider how your work supports company goals. Get to know colleagues in other departments, including their responsibilities, measures of success, and challenges. Reserve time to reflect on how the different parts of the business fit together.",
+      "actual_output": "You can develop a broader perspective on your company by:  \n1. Stopping periodically during your daily work to zoom out and ask yourself questions like how your current tasks fit into the larger company picture and what positive outcomes would result if your work were successful [T07,T09 L30-L38].  \n2. Getting to know coworkers from other parts of the business by asking them about their roles, definitions of success, and challenges, which helps you understand how different parts of the business interconnect [T07,T09 L30-L38].  \n3. Reserving time for reflection to actively counteract the narrow view of daily work and to think about the business, your role, and how all the pieces fit together [T07,T09 L30-L38].  \nAdditionally, you can stay informed about trends—both societal and industry-specific—by reading widely, talking to colleagues, and engaging with industry experts [T12 L54-L58]. Reflecting on how your company fits into these trends and discussing strategic questions with coworkers also supports a broader perspective [T12 L54-L58].",
+      "score": 100.0,
+      "reason": "- covered: Step back from daily tasks and consider how your work supports company goals (evidence: \"Stopping periodically during your daily work to zoom out and ask yourself questions like how your current tasks fit into the larger company picture and what positive outcomes would result if your work were successful\")\n- covered: Get to know colleagues in other departments, including their responsibilities, measures of success, and challenges (evidence: \"Getting to know coworkers from other parts of the business by asking them about their roles, definitions of success, and challenges, which helps you understand how different parts of the business interconnect\")\n- covered: Reserve time to reflect on how the different parts of the business fit together (evidence: \"Reserving time for reflection to actively counteract the narrow view of daily work and to think about the business, your role, and how all the pieces fit together\")",
+      "retrieved_chunk_ids": [
+        29,
+        53,
+        106
+      ],
+      "retrieved_topic_ids": [
+        "T07",
+        "T09",
+        "T12",
+        "T26"
+      ],
+      "retrieved_line_ranges": [
+        [
+          30,
+          38
+        ],
+        [
+          54,
+          58
+        ],
+        [
+          107,
+          111
+        ]
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "How should you approach reversible decisions differently from decisions that are difficult to reverse?",
+      "expected_output": "For easily reversible decisions, you can move forward more quickly and observe the results. Decisions that are difficult to reverse require more analysis, including the cost of undoing them and their financial and stakeholder impacts.",
+      "actual_output": "You should approach reversible decisions by moving forward to see what happens, as they don't require the same level of scrutiny [T10 L37-L48]. In contrast, decisions that are difficult to reverse demand more thought because of their significant financial impact and effects on stakeholders—such as what it would take to unwind them entirely or the consequences of failure [T10 L40-L44]. This means that for irreversible decisions, a more thorough analysis is necessary to assess risks and costs.",
+      "score": 100.0,
+      "reason": "- covered: For easily reversible decisions, you can move forward more quickly and observe the results. (evidence: \"You should approach reversible decisions by moving forward to see what happens, as they don't require the same level of scrutiny [T10 L37-L48].\")\n- covered: Decisions that are difficult to reverse require more analysis, including the cost of undoing them and their financial and stakeholder impacts. (evidence: \"In contrast, decisions that are difficult to reverse demand more thought because of their significant financial impact and effects on stakeholders—such as what it would take to unwind them entirely or the consequences of failure [T10 L40-L44].\")",
+      "retrieved_chunk_ids": [
+        36
+      ],
+      "retrieved_topic_ids": [
+        "T10"
+      ],
+      "retrieved_line_ranges": [
+        [
+          37,
+          48
+        ]
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "How can an effort-versus-impact grid help you prioritize projects?",
+      "expected_output": "Classify projects by how much effort they require and how much impact they could have. Prioritize low-effort, high-impact projects, selectively consider high-effort, high-impact projects, and consider deferring low-impact projects.",
+      "actual_output": "An effort-versus-impact grid helps you prioritize projects by classifying them based on their effort (how much time or resources they require) and their impact (how much value or change they create). You place each project on the grid to see whether it is high effort or low effort, and whether it is high impact or low impact. This allows you to identify which projects are low effort and high impact—considered the \"sweet spot\"—and which ones are low impact and can be deferred. By doing so, you can focus on initiatives that deliver significant value with minimal effort, making it easier to allocate resources effectively and make informed decisions about which projects to pursue. [T10 L37-L48]",
+      "score": 75.0,
+      "reason": "- covered: Classify projects by how much effort they require and how much impact they could have (evidence: \"An effort-versus-impact grid helps you prioritize projects by classifying them based on their effort (how much time or resources they require) and their impact (how much value or change they create).\")\n- covered: Prioritize low-effort, high-impact projects (evidence: \"This allows you to identify which projects are low effort and high impact—considered the \"sweet spot\"—and which ones are low impact and can be deferred.\")\n- missing: Selectively consider high-effort, high-impact projects\n- covered: Consider deferring low-impact projects (evidence: \"This allows you to identify which projects are low effort and high impact—considered the \"sweet- spot\"—and which ones are low impact and can be deferred.\")",
+      "retrieved_chunk_ids": [
+        36,
+        60
+      ],
+      "retrieved_topic_ids": [
+        "T10",
+        "T15"
+      ],
+      "retrieved_line_ranges": [
+        [
+          37,
+          48
+        ],
+        [
+          61,
+          70
+        ]
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "How do you use the benefits, costs, and mitigations framework to compare options?",
+      "expected_output": "List each option's benefits, costs, and specific steps to reduce its costs or risks. Include financial costs, resources, energy, stakeholder dissatisfaction, and potential risks. Involve others to strengthen the analysis.",
+      "actual_output": "I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?",
+      "score": 0.0,
+      "reason": "- missing: List each option's benefits, costs, and specific steps to reduce its costs or risks\n- missing: Include financial costs, resources, energy, stakeholder dissatisfaction, and potential risks\n- missing: Involve others to strengthen the analysis",
+      "retrieved_chunk_ids": [],
+      "retrieved_topic_ids": [],
+      "retrieved_line_ranges": []
+    },
+    {
+      "id": 7,
+      "prompt": "What practices does the course recommend for improving strategic thinking?",
+      "expected_output": "Block time on your calendar for strategic thinking. Learn about societal, technological, and industry trends through reading and conversations. Reflect on how those trends affect your company, where future growth could come from, and which strengths or capability gaps matter.",
+      "actual_output": "The course recommends the following practices for improving strategic thinking:\n\n1. Set aside time by blocking off a specific slot in your calendar, such as a Friday afternoon or a Wednesday morning, to work on strategic thinking, as time does not magically appear and must be intentionally carved out [T11,T13 L49-L59].\n\n2. Think about trends—both societal trends (e.g., climate focus, economy, technology) and industry-specific trends—and stay informed by reading general publications (like newspapers and magazines) and industry-specific publications [T11,T13 L49-L5-59].\n\n3. Talk to people inside your company and seek out industry experts, such as university professors, local colleges, or think tanks, or attend sessions by authors and prepare questions in advance [T11,T13 L49-L59].\n\n4. Reflect on how your company fits into these trends by asking strategic questions, such as how trends affect the company positively or negatively, where growth will come from in the next five years, and what the company is strong at and where it lacks capabilities [T11,T13 L49-L59].\n\n5. Discuss these strategic questions with coworkers who are also developing their strategic thinking skills or write them down in a journal [T11,T13 L49-L59].\n\n6. Share your insights and conversations with your CEO and other senior leaders to position yourself as more strategic and leadership-oriented [T11,T13 L49-L59].",
+      "score": 100.0,
+      "reason": "- covered: Block time on your calendar for strategic thinking (evidence: \"Set aside time by blocking off a specific slot in your calendar, such as a Friday afternoon or a Wednesday morning, to work on strategic thinking, as time does not magically appear and must be intentionally carved out\")\n- covered: Learn about societal, technological, and industry trends through reading and conversations (evidence: \"Think about trends—both societal trends (e.g., climate focus, economy, technology) and industry-specific trends—and stay informed by reading general publications (like newspapers and magazines) and industry-specific publications. Talk to people inside your company and seek out industry experts, such as university professors, local colleges, or think tanks, or attend sessions by authors and prepare questions in advance\")\n- covered: Reflect on how those trends affect your company, where future growth could come from, and which strengths or capability gaps matter (evidence: \"Reflect on how your company fits into these trends by asking strategic questions, such as how trends affect the company positively or negatively, where growth will come from in the next five years, and what the company is strong at and where it lacks capabilities\")",
+      "retrieved_chunk_ids": [
+        11,
+        48
+      ],
+      "retrieved_topic_ids": [
+        "T02",
+        "T04",
+        "T11",
+        "T13"
+      ],
+      "retrieved_line_ranges": [
+        [
+          12,
+          16
+        ],
+        [
+          49,
+          59
+        ]
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "How can you make decisions faster and more confidently when information is incomplete?",
+      "expected_output": "Establish clear decision criteria, use a pilot or test when possible to gather evidence, and set deadlines for collecting information and making the decision. Avoid waiting indefinitely, because delaying a decision also has consequences.",
+      "actual_output": "You can make decisions faster and more confidently when information is incomplete by:  \n1. Being clear about your decision criteria to establish a framework for evaluating options [T15 L61-L70].  \n2. Conducting a test or pilot to gather better information before making a final decision [T15 L61-L70].  \n3. Setting a time limit or deadline to create urgency and avoid procrastination [T15 L61-L70].  \n\nThese strategies help drive action and reduce the paralysis that comes from waiting for complete information.",
+      "score": 75.0,
+      "reason": "- covered: Establish clear decision criteria (evidence: \"Being clear about your decision criteria to establish a framework for evaluating options\")\n- covered: use a pilot or test when possible to gather evidence (evidence: \"Conducting a test or pilot to gather better information before making a final decision\")\n- covered: set deadlines for collecting information and making the decision (evidence: \"Setting a time limit or deadline to create urgency and avoid procrastination\")\n- missing: Avoid waiting indefinitely, because delaying a decision also has consequences",
+      "retrieved_chunk_ids": [
+        60
+      ],
+      "retrieved_topic_ids": [
+        "T15"
+      ],
+      "retrieved_line_ranges": [
+        [
+          61,
+          70
+        ]
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "How can leaders build self-awareness and turn it into practical improvement?",
+      "expected_output": "Keep a journal to identify strengths, weaknesses, and situations that energize or drain you. Gather feedback from colleagues or through a 360-degree feedback process, compare it with your self-perception, identify recurring themes, and choose one specific behavior to practice.",
+      "actual_output": "Leaders can build self-awareness by keeping a journal to regularly reflect on questions such as what energizes them, what drains them, where they are most successful, and what irritates or delights them. This reflection helps identify key themes related to their strengths, quirks, and weaknesses, enabling them to capitalize on their strengths and work around their weaknesses [T16,T17,T18,T19 L71-L87].\n\nAnother way is through feedback, such as participating in a 360 feedback process where people around them provide input on how they view the leader’s strengths and weaknesses. Comparing this external feedback to their self-perception helps reveal blind spots and gaps, allowing for targeted development [T16,T17,T18,T19 L71-L87].\n\nAdditionally, leaders can engage in informal feedback by asking colleagues for three words that come to mind when thinking about them or for suggestions on how to become a more effective leader. Analyzing the key themes from this input provides valuable insights into their leadership style and areas for growth [T16,T17,T18,T19 L71-L87].\n\nOnce self-awareness is built, leaders can turn it into practical improvement by selecting one specific action—such as discussing enterprise-wide issues with leaders or using a reflection template—to practice and implement consistently, rather than trying to do multiple things at once [T31 L123-L125]. This focused practice allows for tangible, real-world application of self-awareness.",
+      "score": 100.0,
+      "reason": "- covered: Keep a journal to identify strengths, weaknesses, and situations that energize or drain you (evidence: \"Leaders can build self-awareness by keeping a journal to regularly reflect on questions such as what energizes them, what drains them, where they are most successful, and what irritates or delights them.\")\n- covered: Gather feedback from colleagues or through a 360-degree feedback process (evidence: \"Another way is through feedback, such as participating in a 360 feedback process where people around them provide input on how they view the leader’s strengths and weaknesses.\")\n- covered: Compare it with your self-perception, identify recurring themes (evidence: \"Comparing this external feedback to their self-perception helps reveal blind spots and gaps, allowing for targeted development.\")\n- covered: Choose one specific behavior to practice (evidence: \"Once self-awareness is built, leaders can turn it into practical improvement by selecting one specific action—such as discussing enterprise-wide issues with leaders or using a reflection template—to practice and implement consistently, rather than trying to do multiple things at once\")",
+      "retrieved_chunk_ids": [
+        70,
+        122
+      ],
+      "retrieved_topic_ids": [
+        "T16",
+        "T17",
+        "T18",
+        "T19",
+        "T31"
+      ],
+      "retrieved_line_ranges": [
+        [
+          71,
+          87
+        ],
+        [
+          123,
+          125
+        ]
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "How can you present a problem to senior leadership in a way that helps move it toward a solution?",
+      "expected_output": "Clarify the problem, its business impact, known causes, and what still needs investigation. Use the five whys when helpful to identify root causes, and bring possible solutions. Lead with your recommendation, support it with two or three key points, and tailor your communication to the audience.",
+      "actual_output": "You can present a problem to senior leadership in a way that helps move it toward a solution by first analyzing the issue through structured thinking processes, such as using a problem-solving template or the five whys, to identify the root cause and potential solutions. After analyzing, bring a few specific, actionable options to senior leadership rather than just stating the problem. For example, if meetings are not effective, suggest solutions like ensuring all meetings have a clear agenda and that action items are clearly defined. This solution-oriented approach demonstrates initiative and clarity, making it more likely that the leadership will engage with and support the proposed changes [T21 L90-L102]. Additionally, tailoring your communication to the audience’s preferences—such as aligning ideas with a higher-level framework when the leader is process-oriented—can improve understanding and increase the chances of approval [T28 L116-L118].",
+      "score": 66.7,
+      "reason": "- covered: Clarify the problem, its business impact, known causes, and what still needs investigation (evidence: \"You can present a problem to senior leadership in a way that helps move it toward a solution by first analyzing the issue through structured thinking processes, such as using a problem-solving template or the five whys, to identify the root cause and potential solutions.\")\n- covered: Use the five whys when helpful to identify root causes (evidence: \"You can present a problem to senior leadership in a way that helps move it toward a than solution by first analyzing the issue through structured thinking processes, such as using a problem-solving template or the five whys, to identify the root cause and potential solutions.\")\n- covered: Bring possible solutions (evidence: \"After analyzing, bring a few specific, actionable options to senior leadership rather than just stating the problem.\")\n- missing: Lead with your recommendation\n- missing: Support it with two or three key points\n- covered: Tailor your communication to the audience (evidence: \"Additionally, tailoring your communication to the audience’s preferences—such as aligning ideas with a higher-level framework when the leader is process-oriented—can improve understanding and increase the chances of approval\")",
+      "retrieved_chunk_ids": [
+        89,
+        115
+      ],
+      "retrieved_topic_ids": [
+        "T21",
+        "T28"
+      ],
+      "retrieved_line_ranges": [
+        [
+          90,
+          102
+        ],
+        [
+          116,
+          118
+        ]
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "What is the recipe for a traditional Neapolitan pizza dough?",
+      "expected_output": "The provided corpus does not cover pizza recipes, so it cannot answer this question.",
+      "actual_output": "I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?",
+      "score": 100.0,
+      "reason": "- covered: The provided corpus does not cover pizza recipes (evidence: \"I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?\")",
+      "retrieved_chunk_ids": [],
+      "retrieved_topic_ids": [],
+      "retrieved_line_ranges": []
+    },
+    {
+      "id": 12,
+      "prompt": "What is the orbital period of Neptune?",
+      "expected_output": "The provided corpus does not cover planetary orbital periods, so it cannot answer this question.",
+      "actual_output": "I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?",
+      "score": 100.0,
+      "reason": "- covered: The provided corpus does not cover planetary orbital periods (evidence: \"I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?\")",
+      "retrieved_chunk_ids": [],
+      "retrieved_topic_ids": [],
+      "retrieved_line_ranges": []
+    },
+    {
+      "id": 13,
+      "prompt": "How do I implement a matrix multiplication kernel in CUDA?",
+      "expected_output": "The provided corpus does not cover CUDA programming, so it cannot answer this question.",
+      "actual_output": "I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?",
+      "score": 100.0,
+      "reason": "- covered: The provided corpus does not cover CUDA programming (evidence: \"I couldn't find anything about that in Think_Like_A_CEO_kb. It covers topics such as Think Like a CEO Leadership Course Overview; Think Like a CEO Course Overview; Alyssa Cohen Background and Expertise. Could you rephrase or ask about one of those?\")",
+      "retrieved_chunk_ids": [],
+      "retrieved_topic_ids": [],
+      "retrieved_line_ranges": []
+    }
+  ]
+}

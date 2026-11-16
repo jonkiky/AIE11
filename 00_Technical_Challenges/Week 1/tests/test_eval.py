@@ -112,6 +112,33 @@ class JudgeTests(unittest.TestCase):
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_wiki_refusal_skips_answer_model_and_records_source_ranges(self):
+        from retrieval_app.wiki import WikiIndex, WikiTopic
+
+        cases = [
+            run_eval.EvaluationCase(1, "First?", "Reference."),
+            run_eval.EvaluationCase(2, "Unrelated?", "Not covered."),
+        ]
+        index = WikiIndex(
+            [WikiTopic("T01", "First useful source topic", "First.", ["a", "b", "c"], [(1, 1)])],
+            np.ones((1, 2)), ["Source."], Path("book.txt"),
+        )
+        hit = Hit(0, "Source.", 0.9, "T01 L1-L1", ("T01",), ((1, 1),))
+        with (
+            patch("retrieval_app.wiki.load_or_build_wiki", return_value=index) as load,
+            patch("retrieval_app.wiki_search.search_wiki", side_effect=[[hit], []]),
+            patch.object(run_eval, "answer", return_value="Grounded answer.") as answer,
+            patch.object(run_eval, "judge_answer", return_value=(100.0, "Correct.")),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            results = run_eval.evaluate(cases, Path("book.txt"), "judge", retriever="wiki")
+        load.assert_called_once()
+        answer.assert_called_once_with("First?", [hit])
+        self.assertEqual(results[0].retrieved_topic_ids, ["T01"])
+        self.assertEqual(results[0].retrieved_line_ranges, [[1, 1]])
+        self.assertIn("couldn't find", results[1].actual_output)
+
     def test_indexes_once_and_passes_answers_to_judge(self):
         cases = [
             run_eval.EvaluationCase(1, "First?", "First reference."),
@@ -167,6 +194,30 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(report["total"], 2)
         self.assertEqual(report["results"][0]["actual_output"], "Actual.")
         self.assertEqual(report["results"][1]["expected_output"], "Second reference.")
+
+    def test_wiki_report_records_matches_per_query(self):
+        case = {"id": 1, "prompt": "Question?", "expected_output": "Reference."}
+        result = run_eval.EvaluationResult(1, "Question?", "Reference.", "Actual.", 100.0, "Complete.", [1])
+        with TemporaryDirectory() as directory:
+            evals_path = Path(directory) / "evals.json"
+            output_path = Path(directory) / "report.json"
+            evals_path.write_text(json.dumps({"questions": [case]}), encoding="utf-8")
+            for strict, expected in [(False, 3), (True, 1)]:
+                args = [
+                    "--evals", str(evals_path), "--corpus", "book.txt",
+                    "--output", str(output_path), "--retriever", "wiki",
+                ]
+                if strict:
+                    args.append("--wiki-strict-top1")
+                with (
+                    patch.object(run_eval, "evaluate", return_value=[result]),
+                    contextlib.redirect_stdout(io.StringIO()),
+                    contextlib.redirect_stderr(io.StringIO()),
+                ):
+                    run_eval.main(args)
+                report = json.loads(output_path.read_text(encoding="utf-8"))
+                self.assertEqual(report["wiki_top_k"], expected)
+                self.assertIsNone(report["wiki_delta"])
 
 
 if __name__ == "__main__":

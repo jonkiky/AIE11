@@ -7,6 +7,9 @@ The input JSON contains a "questions" list with integer "id", "prompt", and
 "expected_output" fields. The default report is eval/results.json. Use
 --limit 1 for a smoke check, --output for a different report path, or
 --judge-model to choose another LiteLLM model.
+Use --retriever wiki for cached topic retrieval; --wiki-threshold controls
+matching, and --wiki-strict-top1 selects the simpler comparison variant.
+--wiki-delta is deprecated. Wiki results record topic IDs and source line ranges.
 
 The judge splits each reference into key points and must quote the actual
 answer as evidence for each covered point. The script verifies every quote and
@@ -20,7 +23,7 @@ import argparse
 import json
 import re
 import sys
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -135,6 +138,8 @@ class EvaluationResult(EvaluationCase):
     score: float
     reason: str
     retrieved_chunk_ids: list[int]
+    retrieved_topic_ids: list[str] = field(default_factory=list)
+    retrieved_line_ranges: list[list[int]] = field(default_factory=list)
 
 
 def load_cases(path: Path) -> list[EvaluationCase]:
@@ -195,17 +200,27 @@ def judge_answer(
 
 
 def evaluate(
-    cases: list[EvaluationCase], corpus_path: Path, judge_model: str, k: int = 3
+    cases: list[EvaluationCase], corpus_path: Path, judge_model: str, k: int = 3,
+    retriever: str = "chunks", rebuild_wiki: bool = False,
+    wiki_threshold: float = 0.55, wiki_delta: float | None = None,
+    wiki_strict_top1: bool = False,
 ) -> list[EvaluationResult]:
     if not cases:
         raise ValueError("At least one evaluation case is required")
     if k <= 0:
         raise ValueError("k must be greater than zero")
-    chunks = split_corpus(load_corpus(corpus_path))
-    if not chunks:
-        raise ValueError("The corpus contains no nonblank chunks")
-    print(f"Indexing {len(chunks)} chunks once...", file=sys.stderr, flush=True)
-    matrix = build_index(chunks)
+    if retriever not in {"chunks", "wiki"}:
+        raise ValueError("retriever must be 'chunks' or 'wiki'")
+    wiki_index = None
+    if retriever == "wiki":
+        from retrieval_app.wiki import load_or_build_wiki
+        wiki_index = load_or_build_wiki(corpus_path, rebuild=rebuild_wiki)
+    else:
+        chunks = split_corpus(load_corpus(corpus_path))
+        if not chunks:
+            raise ValueError("The corpus contains no nonblank chunks")
+        print(f"Indexing {len(chunks)} chunks once...", file=sys.stderr, flush=True)
+        matrix = build_index(chunks)
 
     results = []
     for position, case in enumerate(cases, start=1):
@@ -214,13 +229,23 @@ def evaluate(
             file=sys.stderr,
             flush=True,
         )
-        hits = search(case.prompt, chunks, matrix, k=k)
-        actual_output = answer(case.prompt, hits)
+        if wiki_index is not None:
+            from retrieval_app.wiki_search import no_match_reply, search_wiki
+            hits = search_wiki(
+                case.prompt, wiki_index, threshold=wiki_threshold,
+                delta=wiki_delta, strict_top1=wiki_strict_top1,
+            )
+            actual_output = answer(case.prompt, hits) if hits else no_match_reply(wiki_index)
+        else:
+            hits = search(case.prompt, chunks, matrix, k=k)
+            actual_output = answer(case.prompt, hits)
         score, reason = judge_answer(case, actual_output, judge_model)
         results.append(
             EvaluationResult(
                 case.id, case.prompt, case.expected_output, actual_output,
                 score, reason, [hit.chunk_id for hit in hits],
+                list(dict.fromkeys(topic_id for hit in hits for topic_id in hit.topic_ids)),
+                [list(span) for hit in hits for span in hit.line_ranges],
             )
         )
         print(f"Question {case.id}: {score:.1f}/100", flush=True)
@@ -235,9 +260,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--judge-model", default=CHAT_MODEL)
     parser.add_argument("-k", type=int, default=3)
     parser.add_argument("--limit", type=int, help="evaluate only the first N questions")
+    parser.add_argument("--retriever", choices=["chunks", "wiki"], default="chunks")
+    parser.add_argument("--rebuild-wiki", action="store_true")
+    parser.add_argument("--wiki-threshold", type=float, default=0.55)
+    parser.add_argument("--wiki-delta", type=float, default=None, help="deprecated; has no effect on top-three matching")
+    parser.add_argument("--wiki-strict-top1", action="store_true")
     args = parser.parse_args(argv)
     if args.k <= 0 or (args.limit is not None and args.limit <= 0):
         parser.error("-k and --limit must be greater than zero")
+    if args.rebuild_wiki and args.retriever != "wiki":
+        parser.error("--rebuild-wiki requires --retriever wiki")
+    if not 0 <= args.wiki_threshold <= 1 or (
+        args.wiki_delta is not None and not 0 <= args.wiki_delta <= 1
+    ):
+        parser.error("--wiki-threshold and --wiki-delta must be between 0 and 1")
     if args.output.resolve() in {args.evals.resolve(), args.corpus.resolve()}:
         parser.error("--output must not overwrite the evals or corpus file")
 
@@ -250,8 +286,17 @@ def main(argv: list[str] | None = None) -> int:
             "Warning: the generator is also the judge; scores may be biased.",
             file=sys.stderr,
         )
-    results = evaluate(cases, args.corpus, args.judge_model, k=args.k)
+    results = evaluate(
+        cases, args.corpus, args.judge_model, k=args.k,
+        retriever=args.retriever, rebuild_wiki=args.rebuild_wiki,
+        wiki_threshold=args.wiki_threshold, wiki_delta=args.wiki_delta,
+        wiki_strict_top1=args.wiki_strict_top1,
+    )
     mean_score = sum(result.score for result in results) / len(results)
+    wiki_top_k = None
+    if args.retriever == "wiki":
+        from retrieval_app.wiki_search import TOPIC_MATCH_LIMIT
+        wiki_top_k = 1 if args.wiki_strict_top1 else TOPIC_MATCH_LIMIT
     report = {
         "score_type": "Evidence-verified key-point coverage of the reference (0-100), not calibrated accuracy",
         "evals": str(args.evals.resolve()),
@@ -260,6 +305,11 @@ def main(argv: list[str] | None = None) -> int:
         "generator_model": CHAT_MODEL,
         "judge_model": args.judge_model,
         "k": args.k,
+        "retriever": args.retriever,
+        "wiki_threshold": args.wiki_threshold if args.retriever == "wiki" else None,
+        "wiki_delta": None,
+        "wiki_top_k": wiki_top_k,
+        "wiki_strict_top1": args.wiki_strict_top1 if args.retriever == "wiki" else None,
         "total": len(results),
         "mean_score": mean_score,
         "results": [asdict(result) for result in results],

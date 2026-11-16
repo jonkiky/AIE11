@@ -12,6 +12,48 @@
 
 ## Overview
 
+### Local implementation: optional wiki retrieval
+
+The original course exercise is preserved below. This implementation uses
+LiteLLM with local Ollama Qwen models and now offers a source-linked wiki
+retriever, described in [LLM_WIKI_DESIGN.md](LLM_WIKI_DESIGN.md).
+
+Run these commands from this directory, with Ollama running:
+
+```bash
+# Default: line-based chunk retrieval.
+uv run python -m retrieval_app "What does it mean to think like a CEO?"
+
+# Build the wiki on first use, then reuse it on subsequent queries.
+uv run python -m retrieval_app "How can I build self-awareness?" \
+  --corpus data/Think_Like_A_CEO_kb.txt --retriever wiki
+
+# Evaluate the wiki without overwriting the earlier report.
+uv run python -m eval.run_eval --corpus data/Think_Like_A_CEO_kb.txt \
+  --retriever wiki --output eval/results2.json
+```
+
+- Source chunks have a **hard 1,000-token limit**; numbered wiki input
+  windows have a **2,000-token limit with up to 500 tokens of overlap**.
+  Both are counted with the Qwen embedding tokenizer. Sentence boundaries
+  are preferred; only an oversized sentence is split at whitespace or,
+  as a last resort, a Unicode character boundary. Short corpus lines stay separate.
+- The wiki requires a nonempty corpus without blank lines, so its original
+  file line citations remain accurate. Long lines may span multiple input
+  windows, retaining their original line number.
+- Generated files live under `wiki/<corpus-stem>/`: `wiki.md` and `topics.npy`.
+  Edit topic summaries, keywords, or ranges in the documented format.
+  Embeddings refresh when topic text changes; source changes rebuild the wiki.
+- Wiki matching considers the top three topics for each query vector and
+  filters them using `--wiki-threshold` (default 0.55), then respects the
+  context budget. `--wiki-strict-top1` selects only the best topic per
+  extracted phrase for comparison. The old `--wiki-delta` option is
+  deprecated and has no effect. Use `--rebuild-wiki` to regenerate the wiki;
+  `-k` applies only to chunk mode.
+- Wiki answers cite original source ranges, not generated summaries. If no
+  topic matches, the app returns topic hints without calling the answer model.
+  Evaluation reports include retrieved topic IDs and source line ranges.
+
 > **Read first:** [`02_Dense_Vector_Retrieval/README.md`](../../02_Dense_Vector_Retrieval/README.md) for setup, and work through `Pythonic_RAG.ipynb` before you start here.
 
 The notebook has five stages: load a text file, split it, embed it, search by cosine similarity, present the top hits to a chat model. **This week it becomes an app** — a standalone Python project in this folder with its own `pyproject.toml`, `.env`, data, and terminal command. No `aimakerspace` imports.

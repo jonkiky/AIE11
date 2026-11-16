@@ -11,7 +11,10 @@ swap the .txt in data/ and nothing in this file should need to change.
 
 """
 
+import re
 from pathlib import Path
+
+from .tokens import MAX_SOURCE_TOKENS, count_tokens, tokenizer
 
 
 def load_corpus(path: Path) -> list[str]:
@@ -31,39 +34,56 @@ def load_corpus(path: Path) -> list[str]:
     ]
 
 
-def split_corpus(lines: list[str], chunk_size: int = 1000) -> list[str]:
-    """Split each nonblank line independently, without overlap.
+def split_text(
+    text: str, max_tokens: int = MAX_SOURCE_TOKENS, prefix: str = ""
+) -> list[str]:
+    """Keep sentences whole when possible, with a hard Qwen-token limit.
 
-    Args:
-        lines: the corpus lines, from load_corpus().
-        chunk_size: target number of characters per chunk, not a hard limit.
+    An oversized sentence splits at whitespace, or at a Unicode character
+    boundary if necessary. A prefix can reserve room for wiki line labels.
+    """
+    if max_tokens <= 0:
+        raise ValueError("max_tokens must be greater than zero")
+    remaining = text.strip()
+    chunks = []
+    while remaining:
+        encoded = tokenizer().encode(prefix + remaining, add_special_tokens=False)
+        if len(encoded.ids) <= max_tokens:
+            chunks.append(remaining)
+            break
+        end = encoded.offsets[max_tokens - 1][1] - len(prefix)
+        while end > 0 and count_tokens(prefix + remaining[:end].rstrip()) > max_tokens:
+            end -= 1
+        if end <= 0:
+            raise ValueError("Token limit is too small for the line label and one character")
+        boundaries = list(
+            re.finditer(r"""[.!?。！？]+["')\]”’]*(?=\s|$)""", remaining)
+        )
+        sentence_ends = [match.end() for match in boundaries if match.end() <= end]
+        if sentence_ends:
+            end = sentence_ends[-1]
+        else:
+            whitespace = list(re.finditer(r"\s+", remaining[:end]))
+            if whitespace and remaining[:whitespace[-1].start()].strip():
+                end = whitespace[-1].start()
+        while end > 0 and count_tokens(prefix + remaining[:end].strip()) > max_tokens:
+            end -= 1
+        chunk = remaining[:end].strip()
+        if not chunk:
+            raise ValueError("Could not split text within the token limit")
+        chunks.append(chunk)
+        remaining = remaining[end:].strip()
+    return chunks
 
-    Returns:
-        Chunks with surrounding whitespace removed. Short lines stay separate.
-        Long lines split after the last period within chunk_size, or after the
-        next period if none fits. A remainder without periods stays intact,
-        even if it exceeds chunk_size. Only literal periods are boundaries.
 
-    Raises:
-        ValueError: if chunk_size is not positive.
+def split_corpus(
+    lines: list[str], chunk_size: int = MAX_SOURCE_TOKENS
+) -> list[str]:
+    """Split lines independently into at most chunk_size Qwen tokens.
+
+    Short lines remain separate and chunks do not overlap. Unlike the old
+    character target, chunk_size is now a hard token limit.
     """
     if chunk_size <= 0:
         raise ValueError("chunk_size must be greater than zero")
-
-    chunks = []
-    for line in lines:
-        line = line.strip()
-        start = 0
-        while start < len(line):
-            end = len(line)
-            if end - start > chunk_size:
-                period = line.rfind(".", start, start + chunk_size)
-                if period == -1:
-                    period = line.find(".", start + chunk_size)
-                if period != -1:
-                    end = period + 1
-            chunks.append(line[start:end].strip())
-            start = end
-            while start < len(line) and line[start].isspace():
-                start += 1
-    return chunks
+    return [chunk for line in lines for chunk in split_text(line, chunk_size)]
